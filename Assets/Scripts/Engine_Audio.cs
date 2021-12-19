@@ -12,11 +12,15 @@ public class Engine_Audio : MonoBehaviour
 
     //public float boost_Smoke_Rate = 2f;
     public float minimumPitch = 0.5f;
-    public float maximumPitch = 0.6f;
-    public float engineSpeed;
+    public float maximumPitch = 0.7f;
+    //public float engineSpeed;
     private float saveMaxPitch;
 
+    Vector3 lastPosition;
+    float moveMinimum;
+
     Player player;
+    Animator anim;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +28,7 @@ public class Engine_Audio : MonoBehaviour
         //boost_Smoke_Rate = engineSpeed;
         saveMaxPitch = maximumPitch;
         player = GetComponent<Player>();
+        anim = player.GetComponent<Animator>();
         //audioSource = this.GetComponent<AudioSource>();
         audioSource.pitch = minimumPitch;
     }
@@ -34,19 +39,17 @@ public class Engine_Audio : MonoBehaviour
         //var emission = exhaust_Trail.emission;
         //emission.rateOverTime = boost_Smoke_Rate;
         
-         engineSpeed = player.speed;
+         //engineSpeed = 1;
 
         if(player.boostedSpeed){
-            audioSource.pitch = saveMaxPitch + 0.3f;
+            audioSource.pitch = saveMaxPitch + 0.5f;
         }
         else{
-            if(engineSpeed < minimumPitch){
-                audioSource.pitch = minimumPitch;
-            }else if(engineSpeed > maximumPitch){
+            if(anim.GetBool("isRunning")){
                 audioSource.pitch = maximumPitch;
             }
             else{
-                audioSource.pitch = engineSpeed;
+                audioSource.pitch = minimumPitch;
             }
         }
 
