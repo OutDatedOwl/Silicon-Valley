@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    #region 
     [SerializeField]
     private float maximumSpeed;
 
@@ -43,17 +44,20 @@ public class Player : MonoBehaviour
     [SerializeField]
     private CharacterController characterController;
 
+    [SerializeField]
+    private float gravity = -9.8f;
     private float ySpeed;
     private float normalAccel, normalSpeed;
     private float originalStepOffset;
     private float? lastGroundedTime;
     private float? jumpButtonPressedTime;
     private float animationClipLength;
-    public int chomp_Bark_Sound;
-    private bool isJumping;
-    private bool isGrounded;
+    private int chomp_Bark_Sound;
+    //private bool isJumping;
+    //private bool isGrounded;
     private bool idle_Alt;
     private RaycastHit hit;
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -90,6 +94,9 @@ public class Player : MonoBehaviour
         //speed = inputMagnitude * maximumSpeed;
         //accel = inputMagnitude * maximumAccel;
         //float normalSpeed = speed;
+        
+        //Movement Controls
+        #region 
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             speed = speed + 1.0f;
@@ -102,22 +109,22 @@ public class Player : MonoBehaviour
                 accel = normalAccel;
                 boostedSpeed = false;
             }
-        ySpeed += Physics.gravity.y * Time.deltaTime;
+        ySpeed += gravity * Time.deltaTime;
 
         if (Time.time - lastGroundedTime <= jumpButtonGracePeriod)
         {
             characterController.stepOffset = originalStepOffset;
             ySpeed = -0.5f;
             animator.SetBool("isGrounded", true);
-            isGrounded = true;
+            //isGrounded = true;
             animator.SetBool("isJumping", false);
-            isJumping = false;
+            //isJumping = false;
 
             if (Time.time - jumpButtonPressedTime <= jumpButtonGracePeriod && !animator.GetBool("bite_Chomp"))
             {
                 ySpeed = jumpSpeed;
                 animator.SetBool("isJumping", true);
-                isJumping = true;
+                //isJumping = true;
                 jumpButtonPressedTime = null;
                 lastGroundedTime = null;
             }
@@ -140,6 +147,7 @@ public class Player : MonoBehaviour
 
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }        
+        #endregion
     }
 
     private void Check_Speed_Accel(){
