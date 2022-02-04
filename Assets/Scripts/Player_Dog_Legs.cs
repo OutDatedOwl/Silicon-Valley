@@ -41,8 +41,8 @@ public class Player_Dog_Legs : MonoBehaviour
 
     private AnimationClip animatorClip;
 
-    [SerializeField]
-    private CharacterController characterController;
+    [HideInInspector]
+    public CharacterController characterController;
 
     [SerializeField]
     private float gravity = -9.8f;
@@ -54,7 +54,6 @@ public class Player_Dog_Legs : MonoBehaviour
     private float animationClipLength;
     private float distance;
     private bool idle_Alt;
-    private bool new_Partol_Point = true;
     private RaycastHit hit;
     Vector3 direction_Animal_Waypoint_Move;
     Vector3 new_Pos;
@@ -81,9 +80,14 @@ public class Player_Dog_Legs : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        cinema.LookAt = transform;
-        cinema.Follow = transform;
-        Animal_Takeover();
+        if(player_Has_Control){
+            cinema.LookAt = transform;
+            cinema.Follow = transform;
+            Animal_Takeover();
+        }    
+        else
+            return;
+            //Animal_Movement();
     }
 
     //If Player controlled Animal_Takeover()
@@ -131,7 +135,9 @@ public class Player_Dog_Legs : MonoBehaviour
         velocity.y = ySpeed;
         Check_Speed_Accel();
 
-        characterController.Move(velocity * Time.deltaTime);
+        if(characterController.enabled){
+            characterController.Move(velocity * Time.deltaTime);
+        }
 
         if (movementDirection != Vector3.zero)
         {
@@ -179,7 +185,7 @@ public class Player_Dog_Legs : MonoBehaviour
             animator.SetBool("isRunning", false);
 
         if(characterController.isGrounded && animator.GetBool("isRunning")){
-            audioSource_1.clip = game_Manager.audioClipArchive[5];
+            audioSource_1.clip = game_Manager.audioClipArchive[13];
             if(!audioSource_1.isPlaying){
                 audioSource_1.PlayOneShot(audioSource_1.clip, 0.3f);
             }
@@ -196,6 +202,10 @@ public class Player_Dog_Legs : MonoBehaviour
                 audioSource_2.PlayOneShot(audioSource_2.clip);
             }
         }
+    }
+
+    private void Foot_Step(){
+        audioSource_1.PlayOneShot(audioSource_1.clip, 0.3f);
     }
 
     private void OnDrawGizmos(){

@@ -169,9 +169,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 218557309}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a1daf493e6867244b6a8842c75100fe, type: 3}
+  m_Script: {fileID: 11500000, guid: dbfc3e06501ec6e4facbb3bd15a38b55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioClipArchive: []
+  scene_Camera_Array: []
+  space_Ships: {fileID: 0}
 --- !u!1 &1122637937
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,8 +578,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 218557311}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: Start_Game
+        m_TargetAssemblyTypeName: Game_Manager, Assembly-CSharp
+        m_MethodName: Game_Start
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

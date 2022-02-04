@@ -36,8 +36,7 @@ public class Animal_AI : MonoBehaviour
     [SerializeField]
     private Game_Manager game_Manager;
 
-    [SerializeField]
-    private Animator animator;
+    public Animator animator;
 
     private AnimationClip animatorClip;
 
@@ -54,15 +53,19 @@ public class Animal_AI : MonoBehaviour
     private float animationClipLength;
     private float distance;
     private bool idle_Alt;
+    private bool is_Making_Animal_Sound;
     private bool new_Partol_Point = true;
     private RaycastHit hit;
     private NavMeshAgent animal_Player;
     Vector3 direction_Animal_Waypoint_Move;
     Vector3 new_Pos;
+    Vector3 new_Pos_Run;
+    Vector3 new_Pos_Direction;
     GameObject sphere;
     #endregion
 
     //test booleans
+    public bool shut_Down_Animal;
     public bool player_Has_Control;
     public Transform player_Pos;
     public CinemachineFreeLook cinema;
@@ -84,32 +87,29 @@ public class Animal_AI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        if(player_Has_Control){
-            cinema.LookAt = transform;
-            cinema.Follow = transform;
-            Animal_Takeover();
-        }    
-        else
-            Animal_Movement();
+        if(!shut_Down_Animal && characterController.enabled){
+            if(!is_Making_Animal_Sound && !player_Has_Control){
+                StartCoroutine(wait_Until_Next_Animal_Sound());
+            }
+            if(player_Has_Control){
+                cinema.LookAt = transform;
+                cinema.Follow = transform;
+                Animal_Player();
+            }    
+            else
+                Animal_Computer();
+        }
+        if(shut_Down_Animal){
+            animator.SetBool("offline", true);
+        }
     }
 
-    //If AI controlled Animal_Movement()
+    //If AI controlled Animal_Computer()
     #region 
-    private void Animal_Movement(){
+    private void Animal_Computer(){
         animal_Player.isStopped = false;
         //Animal Flees
-        if(Vector3.Distance(player_Pos.position, transform.position) < 20){
-            Vector3 new_Pos_Direction = transform.position - player_Pos.position;
-            Vector3 new_Pos_Run = transform.position + new_Pos_Direction;
-            //sphere_Spawn = false;
-            animal_Player.SetDestination(new_Pos_Run);
-        }
-        if(animal_Player.velocity == Vector3.zero && new_Partol_Point){
-            //animal_Player.SetDestination(sphere.transform.position);
-            new_Partol_Point = false;
-            new_Pos = transform.position + conversion_From_XY(Animal_Choose_Random_Waypoint(20, 5));
-            StartCoroutine(wait_Until_Animal_Move_Again());
-        }
+        Animal_Check(this.gameObject.tag);
         /*if(sphere_Spawn){
             if(animal_Player.velocity == Vector3.zero){
                 sphere.transform.position = transform.position + conversion_From_XY(Animal_Choose_Random_Waypoint(20, 5));
@@ -119,12 +119,12 @@ public class Animal_AI : MonoBehaviour
             direction_Animal_Waypoint_Move = sphere.transform.position - transform.position;
             //print(conversion_From_XY(Animal_Choose_Random_Waypoint(20, 5)));
         }*/
-        Action_Inputs();
+        //Action_Inputs();
     }
 
     IEnumerator wait_Until_Animal_Move_Again(){
         //sphere_Spawn = false;
-        animal_Player.SetDestination(new_Pos);
+        animal_Player.destination = new_Pos;
         yield return new WaitForSeconds(Random.Range(1,20));
         new_Partol_Point = true;
         //sphere_Spawn = true;
@@ -141,9 +141,9 @@ public class Animal_AI : MonoBehaviour
     }    
     #endregion
 
-    //If Player controlled Animal_Takeover()
+    //If Player controlled Animal_Player()
     #region
-    private void Animal_Takeover(){
+    private void Animal_Player(){
         animal_Player.isStopped = true;
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
@@ -152,7 +152,8 @@ public class Animal_AI : MonoBehaviour
         float magnitude = Mathf.Clamp01(movementDirection.magnitude) * speed;
         //movementDirection = Vector3.ClampMagnitude(movementDirection, 1);
 
-        Action_Inputs();
+        //Action_Inputs();
+        Animal_Check(this.gameObject.tag);
 
         movementDirection = Quaternion.AngleAxis(cameraTransform.rotation.eulerAngles.y, Vector3.up) * movementDirection;
         movementDirection.Normalize();
@@ -204,7 +205,7 @@ public class Animal_AI : MonoBehaviour
         }
     }
 
-    private void Action_Inputs()
+    private void Sheep_Action_Inputs()
     {
         //If Player Controls this animal
         if(player_Has_Control){
@@ -214,7 +215,7 @@ public class Animal_AI : MonoBehaviour
                 audioSource_2.clip = game_Manager.audioClipArchive[1];    
             }
 
-            if(Input.GetButtonDown("Jump") && !characterController.isGrounded){
+            if(Input.GetButtonDown("Jump") && !characterController.isGrounded){ // Sheep Float
                 gravity = -6f;
                 animator.SetBool("isFloating", true);
                 if(audioSource_2.isPlaying){
@@ -241,6 +242,7 @@ public class Animal_AI : MonoBehaviour
             if(characterController.isGrounded && animator.GetBool("isRunning")){
                 audioSource_1.clip = game_Manager.audioClipArchive[5];
                 if(!audioSource_1.isPlaying){
+                    //Animal_Sounds(this.gameObject.tag);
                     audioSource_1.PlayOneShot(audioSource_1.clip, 0.3f);
                 }
             }
@@ -252,6 +254,19 @@ public class Animal_AI : MonoBehaviour
         //If Computer controls this animal
         else
         {
+            if(Vector3.Distance(player_Pos.position, transform.position) < 20){
+                new_Pos_Direction = transform.position - player_Pos.position;
+                new_Pos_Run = transform.position + new_Pos_Direction;
+                //sphere_Spawn = false;
+                animal_Player.destination = new_Pos_Run;
+            }
+            if(animal_Player.velocity == Vector3.zero && new_Partol_Point){
+                //animal_Player.SetDestination(sphere.transform.position);
+                new_Partol_Point = false;
+                new_Pos = transform.position + conversion_From_XY(Animal_Choose_Random_Waypoint(20, 5));
+                StartCoroutine(wait_Until_Animal_Move_Again());
+            }
+
             if (animal_Player.velocity != Vector3.zero)
             {
                 animator.SetBool("isRunning", true);
@@ -272,6 +287,49 @@ public class Animal_AI : MonoBehaviour
         }
     }
 
+    private void Dog_Action_Inputs(){
+        if(player_Has_Control){
+            if (Input.GetButtonDown("Jump"))
+            {
+                jumpButtonPressedTime = Time.time;  
+                audioSource_2.clip = game_Manager.audioClipArchive[1];    
+            }
+
+            if(Input.GetButtonDown("Jump") && !characterController.isGrounded){
+                gravity = -6f;
+                if(audioSource_2.isPlaying){
+                    audioSource_2.Stop();
+                }
+                audioSource_2.clip = game_Manager.audioClipArchive[6];
+                audioSource_2.PlayOneShot(audioSource_2.clip);
+            }
+
+            if (characterController.isGrounded)
+            {
+                gravity = -40f;
+                lastGroundedTime = Time.time;
+            }
+
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+            {
+                animator.SetBool("isRunning", true);
+            }
+            else
+                animator.SetBool("isRunning", false);
+
+            if(characterController.isGrounded && animator.GetBool("isRunning")){
+                audioSource_1.clip = game_Manager.audioClipArchive[13];
+                if(!audioSource_1.isPlaying){
+                    audioSource_1.PlayOneShot(audioSource_1.clip, 0.3f);
+                }
+            }
+            else
+            {
+                audioSource_1.Stop();
+            }
+        }
+    }
+
     private void Boing_Effect() {
         if(audioSource_2.clip = game_Manager.audioClipArchive[1]){
             if(!audioSource_2.isPlaying){
@@ -280,9 +338,44 @@ public class Animal_AI : MonoBehaviour
         }
     }
 
+    IEnumerator wait_Until_Next_Animal_Sound(){
+        if(this.gameObject.tag == "1"){
+            int choose_Clip = Random.Range(1,4);
+            is_Making_Animal_Sound = true;
+            if(choose_Clip == 1){
+                audioSource_1.PlayOneShot(game_Manager.audioClipArchive[9]);
+            }
+            if(choose_Clip == 2){
+                audioSource_1.PlayOneShot(game_Manager.audioClipArchive[10]);
+            }
+            if(choose_Clip == 3){
+                audioSource_1.PlayOneShot(game_Manager.audioClipArchive[11]);
+            }
+            yield return new WaitForSeconds(Random.Range(1,20));
+            is_Making_Animal_Sound = false;
+        }
+    }
+
+    private void Animal_Check(string animal_Name){
+        int animal_Name_Switch;
+        int.TryParse(animal_Name, out animal_Name_Switch);
+        switch(animal_Name_Switch){
+            case 1:
+                Sheep_Action_Inputs(); // SHEEP---------------------------------------------- 1
+                break;
+            case 2:
+                Dog_Action_Inputs(); // DOG-------------------------------------------------- 2
+                break;
+        }
+    }
+
+    private void Foot_Step(){
+        audioSource_1.PlayOneShot(audioSource_1.clip, 0.3f);
+    }
+
     private void OnDrawGizmos(){
         Gizmos.color = Color.red;
         //Gizmos.DrawRay(this.transform.position, transform.forward * 7f);
-        Gizmos.DrawRay(this.transform.position, direction_Animal_Waypoint_Move * 7f);
+        //Gizmos.DrawRay(this.transform.position, animal_Player.getde * 7f);
     }
 }

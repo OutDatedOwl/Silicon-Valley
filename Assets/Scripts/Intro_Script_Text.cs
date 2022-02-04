@@ -6,10 +6,11 @@ using TMPro;
 public class Intro_Script_Text : MonoBehaviour
 {
     TextMeshProUGUI textMesh;
-    private Queue<string> dialogue_Queue; // Used for push_pop dialogue
+    public Queue<string> dialogue_Queue; // Used for push_pop dialogue
     
-    [SerializeField]
-    private string[] dialogue_Text; // Array of stirngs used for dialogue
+    public string[] dialogue_Text; // Array of stirngs used for dialogue
+
+    public bool level_One_Ready = false;
 
     private string[] text_Parse_Array;
     
@@ -65,8 +66,12 @@ public class Intro_Script_Text : MonoBehaviour
             StopAllCoroutines();
             StartCoroutine(Dialogue_Beep_Boop());
             if(dialogue_Queue.Count != 0){
+                dialogue_Queue.Dequeue();
                 //string sentence = dialogue_Queue.Dequeue();
                 //StartCoroutine(Type_Sentence(sentence));
+            }
+            if(dialogue_Queue.Count == 0){
+                level_One_Ready = true;
             }
             //for(int i = 0; i < text_Parse_Array.Length; i++){
                 //StartCoroutine(Dialogue_Beep_Boop());

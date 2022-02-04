@@ -41,10 +41,13 @@
      <Compile Include="Assets\Scripts\Sprite_Look_Camera.cs" />
      <Compile Include="Assets\Scripts\Intro_Script_Text.cs" />
      <Compile Include="Assets\Scripts\Engine_Audio.cs" />
-     <Compile Include="Assets\MainMenu.cs" />
+     <Compile Include="Assets\Scripts\Tony_Script.cs" />
      <Compile Include="Assets\Scripts\Gate_Switch_Script.cs" />
-     <Compile Include="Assets\Scripts\Game_Manager.cs" />
+     <Compile Include="Assets\Scripts\Charlies_Angels.cs" />
+     <Compile Include="Assets\Scripts\Open_Sesame.cs" />
      <Compile Include="Assets\Scripts\Player_Dog_Legs.cs" />
+     <Compile Include="Assets\Scripts\Game_Manager.cs" />
+     <Compile Include="Assets\Scripts\Player_Micro_Chip.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
