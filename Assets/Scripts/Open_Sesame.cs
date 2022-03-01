@@ -18,7 +18,7 @@ public class Open_Sesame : MonoBehaviour
     [HideInInspector]
     public bool npc_Interact_Zone_Tony;
 
-    private bool play_Cinematic;
+    public bool play_Cinematic;
 
     [SerializeField]
     private CharacterController player;
@@ -33,10 +33,11 @@ public class Open_Sesame : MonoBehaviour
     private void Update(){
         game_Manager.scene_Camera_Array[1].transform.LookAt(tony.transform.position);
 
-        if(Input.GetKeyDown(KeyCode.E) && !game_Manager.mission_00 && play_Cinematic){
+        if(Input.GetKeyDown(KeyCode.E) && !game_Manager.mission_00 && (npc_Interact_Zone_Tony || play_Cinematic)){
             game_Manager.tony_Script.text_To_Screen();
             npc_Interact_Zone_Tony = false;
             player.enabled = false;
+            play_Cinematic = true;
             player.transform.position = cinematic_Wait_00.transform.position;
 
             left_Door_Anim.SetBool("Open_Sesame", true);
@@ -58,13 +59,13 @@ public class Open_Sesame : MonoBehaviour
     private void OnTriggerEnter(Collider collider){
         if(collider.tag == "2" && game_Manager.tony_Script.dialogue_Queue.Count != 0){ // If Dog enters zone
             npc_Interact_Zone_Tony = true;
-            play_Cinematic = true;
+            //play_Cinematic = true;
         }
     }
 
     private void OnTriggerExit(Collider collider){
         npc_Interact_Zone_Tony = false;
-        play_Cinematic = false;
+        //play_Cinematic = false;
     }
 
 IEnumerator cinematic_End(){

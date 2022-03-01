@@ -67,6 +67,7 @@ public class Animal_AI : MonoBehaviour
     //test booleans
     public bool shut_Down_Animal;
     public bool player_Has_Control;
+    public bool old_Bot;
     public Transform player_Pos;
     public CinemachineFreeLook cinema;
 
