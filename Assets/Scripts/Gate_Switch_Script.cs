@@ -18,7 +18,7 @@ public class Gate_Switch_Script : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider collider){
-        if(collider.gameObject.tag == "Player"){
+        if(collider.gameObject.layer == 9){
             if(switch_Power_On){
                 red_Light.SetActive(false);
                 blue_Light.SetActive(true);

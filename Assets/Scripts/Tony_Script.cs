@@ -124,7 +124,7 @@ private void Dialogue_Audio(int dialogue_Line){
 
     private IEnumerator Dialogue_Beep_Boop(){
         textMesh.text = "";
-        for(int i = 0; i < text_Parse_Array.Length; i++){
+        for(int i = 0; i < text_Parse_Array.Length - 1; i++){
             textMesh.text += text_Parse_Array[i] + " ";
             yield return new WaitForSeconds(speech_Speed);
             if(next_Dialogue_Line == 13){

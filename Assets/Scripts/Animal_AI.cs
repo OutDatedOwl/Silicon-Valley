@@ -62,14 +62,11 @@ public class Animal_AI : MonoBehaviour
     Vector3 new_Pos_Run;
     Vector3 new_Pos_Direction;
     GameObject sphere;
-    #endregion
-
-    //test booleans
     public bool shut_Down_Animal;
     public bool player_Has_Control;
-    public bool old_Bot;
     public Transform player_Pos;
     public CinemachineFreeLook cinema;
+    #endregion
 
     // Start is called before the first frame update
     void Start()
